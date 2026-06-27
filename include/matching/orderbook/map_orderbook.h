@@ -161,7 +161,7 @@ private:
      *
      * @param order the order to insert.
      */
-    void insertLimitOrder(const Order &order);
+    void insertLimitOrder(Order &&order);
 
     /**
      * Submits a market order to the book.
@@ -175,7 +175,7 @@ private:
      *
      * @param order the trailing restart order to insert.
      */
-    void insertTrailingStopOrder(const Order &order);
+    void insertTrailingStopOrder(Order &&order);
 
     /**
      * Submits a restart market order to the book.
@@ -189,7 +189,7 @@ private:
      *
      * @param order the restart order to insert.
      */
-    void insertStopOrder(const Order &order);
+    void insertStopOrder(Order &&order);
 
     /**
      * Calculates the stop price of a trailing stop
@@ -242,6 +242,73 @@ private:
      *              orderbook.
      */
     void activateStopOrder(Order order);
+
+    template <bool IsBid, typename MapType>
+    bool activateStopLevelsGeneric(MapType &levels, uint64_t trigger_price)
+    {
+        bool activated_orders = false;
+        if constexpr (IsBid)
+        {
+            auto it = levels.begin();
+            while (it != levels.end() && it->first <= trigger_price)
+            {
+                activated_orders = true;
+                Order &stop_order = it->second.front();
+                activateStopOrder(stop_order);
+                it = levels.begin();
+            }
+        }
+        else
+        {
+            auto it = levels.rbegin();
+            while (it != levels.rend() && it->first >= trigger_price)
+            {
+                activated_orders = true;
+                Order &stop_order = it->second.front();
+                activateStopOrder(stop_order);
+                it = levels.rbegin();
+            }
+        }
+        return activated_orders;
+    }
+
+    template <LevelSide Side>
+    void updateTrailingStopOrdersGeneric(std::map<uint64_t, Level> &trailing_levels, uint64_t &trailing_price, uint64_t current_market_price)
+    {
+        constexpr bool IsBid = (Side == LevelSide::Bid);
+        bool should_skip = false;
+        if constexpr (IsBid)
+            should_skip = (trailing_price <= current_market_price);
+        else
+            should_skip = (trailing_price >= current_market_price);
+
+        if (should_skip || trailing_levels.empty())
+        {
+            trailing_price = last_traded_price;
+            return;
+        }
+
+        std::map<uint64_t, Level> new_trailing_levels;
+        auto trailing_levels_it = trailing_levels.begin();
+        while (trailing_levels_it != trailing_levels.end())
+        {
+            while (!trailing_levels_it->second.empty())
+            {
+                Order &stop_order = trailing_levels_it->second.front();
+                uint64_t new_stop_price = calculateStopPrice(stop_order);
+                auto hint = IsBid ? new_trailing_levels.begin() : new_trailing_levels.end();
+                auto new_trailing_levels_it = new_trailing_levels.emplace_hint(hint, std::piecewise_construct,
+                    std::make_tuple(new_stop_price), std::make_tuple(new_stop_price, Side, symbol_id));
+                orders.find(stop_order.getOrderID())->second.level_it = new_trailing_levels_it;
+                trailing_levels_it->second.popFront();
+                new_trailing_levels_it->second.addOrder(stop_order);
+                event_handler.handleOrderUpdated(OrderUpdated{stop_order});
+            }
+            ++trailing_levels_it;
+        }
+        std::swap(trailing_levels, new_trailing_levels);
+        trailing_price = last_traded_price;
+    }
 
     /**
      * Matches all crossed orders in the book. Orders that are filled
@@ -343,7 +410,7 @@ private:
     // required for the intrusive list.
 
     // Maps order IDs to order wrappers.
-    robin_hood::unordered_map<uint64_t, OrderWrapper> orders;
+    robin_hood::unordered_node_map<uint64_t, OrderWrapper> orders;
     // Maps prices to limit levels.
     std::map<uint64_t, Level> ask_levels;
     std::map<uint64_t, Level> bid_levels;

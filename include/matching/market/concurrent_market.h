@@ -103,7 +103,7 @@ public:
     /**
      * @return the string representation of the market.
      */
-    [[nodiscard]] std::string toString();
+    [[nodiscard]] std::string toString() const;
 
     /**
      * Writes the string representation to a file with the provided
@@ -111,9 +111,9 @@ public:
      *
      * @param name the name to the file that will be written to.
      */
-    void dumpMarket(const std::string &name);
+    void dumpMarket(const std::string &name) const;
 
-    friend std::ostream &operator<<(std::ostream &os, ConcurrentMarket &concurrent_market);
+    friend std::ostream &operator<<(std::ostream &os, const ConcurrentMarket &concurrent_market);
 
 private:
     /**
@@ -141,7 +141,7 @@ private:
     // handler that is associated with the symbol ID.
     robin_hood::unordered_map<uint32_t, uint32_t> id_to_submission_index;
     // The thread pool that order operations will be submitted to.
-    ThreadPool thread_pool;
+    mutable ThreadPool thread_pool;
     // The index of the thread pool queue and orderbook handler that will be associated
     // with a newly added symbol.
     uint32_t symbol_submission_index;

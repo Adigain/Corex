@@ -137,25 +137,25 @@ void MapOrderBook::addLimitOrder(Order &order)
 
     match(order);
     if (!order.isFilled() && !order.isIoc() && !order.isFok())
-        insertLimitOrder(order);
+        insertLimitOrder(std::move(order));
     else
-        event_handler.handleOrderDeleted(OrderDeleted{order});
+        event_handler.handleOrderDeleted(OrderDeleted{std::move(order)});
 }
 
-void MapOrderBook::insertLimitOrder(const Order &order)
+void MapOrderBook::insertLimitOrder(Order &&order)
 {
     if (order.isAsk())
     {
         auto level_it = ask_levels.emplace_hint(ask_levels.begin(), std::piecewise_construct, std::make_tuple(order.getPrice()),
             std::make_tuple(order.getPrice(), LevelSide::Ask, symbol_id));
-        auto [orders_it, success] = orders.emplace(order.getOrderID(), OrderWrapper{order, level_it});
+        auto [orders_it, success] = orders.emplace(order.getOrderID(), OrderWrapper{std::move(order), level_it});
         level_it->second.addOrder(orders_it->second.order);
     }
     else
     {
         auto level_it = bid_levels.emplace_hint(bid_levels.end(), std::piecewise_construct, std::make_tuple(order.getPrice()),
             std::make_tuple(order.getPrice(), LevelSide::Bid, symbol_id));
-        auto [orders_it, success] = orders.emplace(order.getOrderID(), OrderWrapper{order, level_it});
+        auto [orders_it, success] = orders.emplace(order.getOrderID(), OrderWrapper{std::move(order), level_it});
         level_it->second.addOrder(orders_it->second.order);
     }
 }
@@ -164,7 +164,7 @@ void MapOrderBook::addMarketOrder(Order &order)
 {
     order.setPrice(order.isAsk() ? 0 : std::numeric_limits<uint64_t>::max());
     match(order);
-    event_handler.handleOrderDeleted(OrderDeleted{order});
+    event_handler.handleOrderDeleted(OrderDeleted{std::move(order)});
 }
 
 void MapOrderBook::addStopOrder(Order &order)
@@ -183,40 +183,40 @@ void MapOrderBook::addStopOrder(Order &order)
         order.isMarket() ? addMarketOrder(order) : addLimitOrder(order);
         return;
     }
-    order.isTrailingStop() || order.isTrailingStopLimit() ? insertTrailingStopOrder(order) : insertStopOrder(order);
+    order.isTrailingStop() || order.isTrailingStopLimit() ? insertTrailingStopOrder(std::move(order)) : insertStopOrder(std::move(order));
 }
 
-void MapOrderBook::insertStopOrder(const Order &order)
+void MapOrderBook::insertStopOrder(Order &&order)
 {
     if (order.isAsk())
     {
         auto level_it = stop_ask_levels
                             .emplace(std::piecewise_construct, std::make_tuple(order.getStopPrice()),
-                                std::make_tuple(order.getStopPrice(), LevelSide::Ask, symbol_id))
+                                  std::make_tuple(order.getStopPrice(), LevelSide::Ask, symbol_id))
                             .first;
-        auto [orders_it, success] = orders.emplace(order.getOrderID(), OrderWrapper{order, level_it});
+        auto [orders_it, success] = orders.emplace(order.getOrderID(), OrderWrapper{std::move(order), level_it});
         level_it->second.addOrder(orders_it->second.order);
     }
     else
     {
         auto level_it = stop_bid_levels
                             .emplace(std::piecewise_construct, std::make_tuple(order.getStopPrice()),
-                                std::make_tuple(order.getStopPrice(), LevelSide::Bid, symbol_id))
+                                  std::make_tuple(order.getStopPrice(), LevelSide::Bid, symbol_id))
                             .first;
-        auto [orders_it, success] = orders.emplace(order.getOrderID(), OrderWrapper{order, level_it});
+        auto [orders_it, success] = orders.emplace(order.getOrderID(), OrderWrapper{std::move(order), level_it});
         level_it->second.addOrder(orders_it->second.order);
     }
 }
 
-void MapOrderBook::insertTrailingStopOrder(const Order &order)
+void MapOrderBook::insertTrailingStopOrder(Order &&order)
 {
     if (order.isAsk())
     {
         auto level_it = trailing_stop_ask_levels
                             .emplace(std::piecewise_construct, std::make_tuple(order.getStopPrice()),
-                                std::make_tuple(order.getStopPrice(), LevelSide::Ask, symbol_id))
+                                  std::make_tuple(order.getStopPrice(), LevelSide::Ask, symbol_id))
                             .first;
-        auto [orders_it, success] = orders.emplace(order.getOrderID(), OrderWrapper{order, level_it});
+        auto [orders_it, success] = orders.emplace(order.getOrderID(), OrderWrapper{std::move(order), level_it});
         level_it->second.addOrder(orders_it->second.order);
         orders_it->second.level_it = level_it;
     }
@@ -224,9 +224,9 @@ void MapOrderBook::insertTrailingStopOrder(const Order &order)
     {
         auto level_it = trailing_stop_bid_levels
                             .emplace(std::piecewise_construct, std::make_tuple(order.getStopPrice()),
-                                std::make_tuple(order.getStopPrice(), LevelSide::Bid, symbol_id))
+                                  std::make_tuple(order.getStopPrice(), LevelSide::Bid, symbol_id))
                             .first;
-        auto [orders_it, success] = orders.emplace(order.getOrderID(), OrderWrapper{order, level_it});
+        auto [orders_it, success] = orders.emplace(order.getOrderID(), OrderWrapper{std::move(order), level_it});
         level_it->second.addOrder(orders_it->second.order);
         orders_it->second.level_it = level_it;
     }
@@ -273,50 +273,18 @@ void MapOrderBook::activateStopOrders()
 
 bool MapOrderBook::activateBidStopOrders()
 {
-    bool activated_orders = false;
-    auto stop_levels_it = stop_bid_levels.begin();
     uint64_t last_ask_price = lastTradedPriceAsk();
-    while (stop_levels_it != stop_bid_levels.end() && stop_levels_it->first <= last_ask_price)
-    {
-        activated_orders = true;
-        Order &stop_order = stop_levels_it->second.front();
-        activateStopOrder(stop_order);
-        stop_levels_it = stop_bid_levels.begin();
-    }
-    auto trailing_stop_levels_it = trailing_stop_bid_levels.begin();
-    last_ask_price = lastTradedPriceAsk();
-    while (trailing_stop_levels_it != trailing_stop_bid_levels.end() && trailing_stop_levels_it->first <= last_ask_price)
-    {
-        activated_orders = true;
-        Order &trailing_stop_order = trailing_stop_levels_it->second.front();
-        activateStopOrder(trailing_stop_order);
-        trailing_stop_levels_it = trailing_stop_bid_levels.begin();
-    }
-    return activated_orders;
+    bool activated_stop = activateStopLevelsGeneric<true>(stop_bid_levels, last_ask_price);
+    bool activated_trailing = activateStopLevelsGeneric<true>(trailing_stop_bid_levels, last_ask_price);
+    return activated_stop || activated_trailing;
 }
 
 bool MapOrderBook::activateAskStopOrders()
 {
-    bool activated_orders = false;
     uint64_t last_bid_price = lastTradedPriceBid();
-    auto stop_levels_it = stop_ask_levels.rbegin();
-    while (stop_levels_it != stop_ask_levels.rend() && stop_levels_it->first >= last_bid_price)
-    {
-        activated_orders = true;
-        Order &stop_order = stop_levels_it->second.front();
-        activateStopOrder(stop_order);
-        stop_levels_it = stop_ask_levels.rbegin();
-    }
-    auto trailing_stop_levels_it = trailing_stop_ask_levels.rbegin();
-    last_bid_price = lastTradedPriceBid();
-    while (trailing_stop_levels_it != trailing_stop_ask_levels.rend() && trailing_stop_levels_it->first >= last_bid_price)
-    {
-        activated_orders = true;
-        Order &trailing_stop_order = trailing_stop_levels_it->second.front();
-        activateStopOrder(trailing_stop_order);
-        trailing_stop_levels_it = trailing_stop_ask_levels.rbegin();
-    }
-    return activated_orders;
+    bool activated_stop = activateStopLevelsGeneric<false>(stop_ask_levels, last_bid_price);
+    bool activated_trailing = activateStopLevelsGeneric<false>(trailing_stop_ask_levels, last_bid_price);
+    return activated_stop || activated_trailing;
 }
 
 void MapOrderBook::activateStopOrder(Order order)
@@ -341,60 +309,12 @@ void MapOrderBook::activateStopOrder(Order order)
 
 void MapOrderBook::updateBidStopOrders()
 {
-    if (trailing_ask_price <= lastTradedPriceAsk() || trailing_stop_bid_levels.empty())
-    {
-        trailing_ask_price = last_traded_price;
-        return;
-    }
-    std::map<uint64_t, Level> new_trailing_levels;
-    auto trailing_levels_it = trailing_stop_bid_levels.begin();
-    // Update the stop price of all existing trailing stop orders.
-    while (trailing_levels_it != trailing_stop_bid_levels.end())
-    {
-        while (!trailing_levels_it->second.empty())
-        {
-            Order &stop_order = trailing_levels_it->second.front();
-            uint64_t new_stop_price = calculateStopPrice(stop_order);
-            auto new_trailing_levels_it = new_trailing_levels.emplace_hint(new_trailing_levels.begin(), std::piecewise_construct,
-                std::make_tuple(new_stop_price), std::make_tuple(new_stop_price, LevelSide::Bid, symbol_id));
-            orders.find(stop_order.getOrderID())->second.level_it = new_trailing_levels_it;
-            trailing_levels_it->second.popFront();
-            new_trailing_levels_it->second.addOrder(stop_order);
-            event_handler.handleOrderUpdated(OrderUpdated{stop_order});
-        }
-        ++trailing_levels_it;
-    }
-    std::swap(trailing_stop_bid_levels, new_trailing_levels);
-    trailing_ask_price = last_traded_price;
+    updateTrailingStopOrdersGeneric<LevelSide::Bid>(trailing_stop_bid_levels, trailing_ask_price, lastTradedPriceAsk());
 }
 
 void MapOrderBook::updateAskStopOrders()
 {
-    if (trailing_bid_price >= lastTradedPriceBid() || trailing_stop_ask_levels.empty())
-    {
-        trailing_bid_price = last_traded_price;
-        return;
-    }
-    std::map<uint64_t, Level> new_trailing_levels;
-    auto trailing_levels_it = trailing_stop_ask_levels.begin();
-    // Update the stop price of all existing trailing stop orders.
-    while (trailing_levels_it != trailing_stop_ask_levels.end())
-    {
-        while (!trailing_levels_it->second.empty())
-        {
-            Order &stop_order = trailing_levels_it->second.front();
-            uint64_t new_stop_price = calculateStopPrice(stop_order);
-            auto new_trailing_levels_it = new_trailing_levels.emplace_hint(new_trailing_levels.end(), std::piecewise_construct,
-                std::make_tuple(new_stop_price), std::make_tuple(new_stop_price, LevelSide::Ask, symbol_id));
-            orders.find(stop_order.getOrderID())->second.level_it = new_trailing_levels_it;
-            trailing_levels_it->second.popFront();
-            new_trailing_levels_it->second.addOrder(stop_order);
-            event_handler.handleOrderUpdated(OrderUpdated{stop_order});
-        }
-        ++trailing_levels_it;
-    }
-    std::swap(trailing_stop_ask_levels, new_trailing_levels);
-    trailing_bid_price = last_traded_price;
+    updateTrailingStopOrdersGeneric<LevelSide::Ask>(trailing_stop_ask_levels, trailing_bid_price, lastTradedPriceBid());
 }
 
 void MapOrderBook::match(Order &order)

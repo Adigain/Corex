@@ -17,7 +17,6 @@ Order::Order(OrderType type_, OrderSide side_, OrderTimeInForce time_in_force_, 
     last_executed_price = 0;
     executed_quantity = 0;
     open_quantity = quantity;
-    last_executed_price = 0;
     last_executed_quantity = 0;
     VALIDATE_ORDER;
 }

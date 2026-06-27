@@ -29,7 +29,7 @@ void ConcurrentMarket::deleteSymbol(uint32_t symbol_id)
     auto it = id_to_symbol.find(symbol_id);
     assert(it != id_to_symbol.end() && "Symbol does not exist!");
     uint32_t submission_index = getSubmissionIndex(symbol_id);
-    OrderBookHandler *orderbook_handler = orderbook_handlers[symbol_submission_index].get();
+    OrderBookHandler *orderbook_handler = orderbook_handlers[submission_index].get();
     thread_pool.submitTask(submission_index, [=] { orderbook_handler->deleteOrderBook(symbol_id, it->second->name); });
     id_to_symbol.erase(symbol_id);
     id_to_submission_index.erase(symbol_id);
@@ -39,7 +39,9 @@ void ConcurrentMarket::addOrder(const Order &order)
 {
     uint32_t submission_index = getSubmissionIndex(order.getSymbolID());
     OrderBookHandler *orderbook_handler = orderbook_handlers[submission_index].get();
-    thread_pool.submitTask(submission_index, [=] { orderbook_handler->addOrder(order); });
+    thread_pool.submitTask(submission_index, [orderbook_handler, order]() mutable {
+        orderbook_handler->addOrder(std::move(order));
+    });
 }
 
 void ConcurrentMarket::deleteOrder(uint32_t symbol_id, uint64_t order_id)
@@ -88,13 +90,13 @@ void ConcurrentMarket::updateSymbolSubmissionIndex()
     symbol_submission_index = (symbol_submission_index + 1) % orderbook_handlers.size();
 }
 
-std::string ConcurrentMarket::toString()
+std::string ConcurrentMarket::toString() const
 {
     std::string market_string;
     std::vector<std::future<std::string>> futures(orderbook_handlers.size());
     for (uint32_t i = 0; i < futures.size(); ++i)
     {
-        OrderBookHandler *orderbook_handler = orderbook_handlers[i].get();
+        const OrderBookHandler *orderbook_handler = orderbook_handlers[i].get();
         futures[i] = thread_pool.submitWaitableTask(i, [=] { return orderbook_handler->toString(); });
     }
     for (auto &future : futures)
@@ -102,14 +104,14 @@ std::string ConcurrentMarket::toString()
     return market_string;
 }
 
-void ConcurrentMarket::dumpMarket(const std::string &name)
+void ConcurrentMarket::dumpMarket(const std::string &name) const
 {
     std::ofstream file(name);
     file << *this;
     file.close();
 }
 
-std::ostream &operator<<(std::ostream &os, ConcurrentMarket &concurrent_market)
+std::ostream &operator<<(std::ostream &os, const ConcurrentMarket &concurrent_market)
 {
     os << concurrent_market.toString();
     return os;

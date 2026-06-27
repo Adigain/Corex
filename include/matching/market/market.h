@@ -23,7 +23,7 @@ struct OrderBookHandler
 
     void deleteOrderBook(uint32_t symbol_id, std::string symbol_name);
 
-    void addOrder(const Order &order);
+    void addOrder(Order order);
 
     void deleteOrder(uint32_t symbol_id, uint64_t order_id);
 
@@ -35,7 +35,7 @@ struct OrderBookHandler
 
     void executeOrder(uint32_t symbol_id, uint64_t order_id, uint64_t quantity);
 
-    std::string toString();
+    std::string toString() const;
 
 private:
     // Maps symbol IDs to order books.

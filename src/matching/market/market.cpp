@@ -22,12 +22,12 @@ void OrderBookHandler::deleteOrderBook(uint32_t symbol_id, std::string symbol_na
     event_handler->handleSymbolDeleted(SymbolDeleted{symbol_id, std::move(symbol_name)});
 }
 
-void OrderBookHandler::addOrder(const Order &order)
+void OrderBookHandler::addOrder(Order order)
 {
     auto it = id_to_book.find(order.getSymbolID());
     assert(it != id_to_book.end() && "Symbol does not exist!");
     OrderBook *book = it->second.get();
-    book->addOrder(order);
+    book->addOrder(std::move(order));
 }
 
 void OrderBookHandler::deleteOrder(uint32_t symbol_id, uint64_t order_id)
@@ -76,7 +76,7 @@ void OrderBookHandler::executeOrder(uint32_t symbol_id, uint64_t order_id, uint6
     book->executeOrder(order_id, quantity);
 }
 
-std::string OrderBookHandler::toString()
+std::string OrderBookHandler::toString() const
 {
     std::string book_handler_string;
     for (const auto &[symbol_id, book_ptr] : id_to_book)
