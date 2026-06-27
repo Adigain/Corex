@@ -1,10 +1,10 @@
-#ifndef RAPID_TRADER_EVENT_HANDLER_H
-#define RAPID_TRADER_EVENT_HANDLER_H
+#ifndef COREX_EVENT_HANDLER_H
+#define COREX_EVENT_HANDLER_H
 #include "market/market.h"
 #include "market/concurrent_market.h"
 #include "event_handler/event.h"
 
-namespace RapidTrader {
+namespace Corex {
 class EventHandler
 {
 public:
@@ -63,5 +63,5 @@ protected:
     virtual void handleSymbolDeleted(const SymbolDeleted &event) {}
     // LCOV_EXCL_STOP
 };
-} // namespace RapidTrader
-#endif // RAPID_TRADER_EVENT_HANDLER_H
+} // namespace Corex
+#endif // COREX_EVENT_HANDLER_H

@@ -1,8 +1,8 @@
-#ifndef RAPID_TRADER_EVENT_H
-#define RAPID_TRADER_EVENT_H
+#ifndef COREX_EVENT_H
+#define COREX_EVENT_H
 #include "order.h"
 
-namespace RapidTrader {
+namespace Corex {
 struct Event
 {
     virtual ~Event() = default;
@@ -81,5 +81,5 @@ struct OrderUpdated : public OrderEvent
 
     friend std::ostream &operator<<(std::ostream &os, const OrderUpdated &notification);
 };
-} // namespace RapidTrader
-#endif // RAPID_TRADER_EVENT_H
+} // namespace Corex
+#endif // COREX_EVENT_H

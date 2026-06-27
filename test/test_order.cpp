@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "order.h"
 
-using namespace RapidTrader;
+using namespace Corex;
 
 TEST(Order, OrderConstructorShouldWork)
 {

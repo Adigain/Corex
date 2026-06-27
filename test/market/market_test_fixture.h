@@ -1,10 +1,10 @@
-#ifndef RAPID_TRADER_MARKET_TEST_FIXTURE_H
-#define RAPID_TRADER_MARKET_TEST_FIXTURE_H
+#ifndef COREX_MARKET_TEST_FIXTURE_H
+#define COREX_MARKET_TEST_FIXTURE_H
 #include <gtest/gtest.h>
 #include "debug_event_handler.h"
 #include "market/market.h"
 
-using namespace RapidTrader;
+using namespace Corex;
 
 class MarketTest : public ::testing::Test
 {
@@ -77,8 +77,8 @@ protected:
     }
 
     MarketEventDebugger market_debugger;
-    RapidTrader::Market market{std::unique_ptr<RapidTrader::EventHandler>(new DebugEventHandler(market_debugger))};
+    Corex::Market market{std::unique_ptr<Corex::EventHandler>(new DebugEventHandler(market_debugger))};
     uint32_t symbol_id = 1;
     std::string symbol_name = "GOOG";
 };
-#endif // RAPID_TRADER_MARKET_TEST_FIXTURE_H
+#endif // COREX_MARKET_TEST_FIXTURE_H

@@ -1,9 +1,9 @@
-#ifndef RAPID_TRADER_SYMBOL_H
-#define RAPID_TRADER_SYMBOL_H
+#ifndef COREX_SYMBOL_H
+#define COREX_SYMBOL_H
 #include <iostream>
 #include <cstdint>
 
-namespace RapidTrader {
+namespace Corex {
 /**
  * Represents a publicly traded security.
  */
@@ -16,5 +16,5 @@ struct Symbol
     Symbol(uint32_t id_, std::string name_);
     friend std::ostream &operator<<(std::ostream &os, const Symbol &symbol);
 };
-} // namespace RapidTrader
-#endif // RAPID_TRADER_SYMBOL_H
+} // namespace Corex
+#endif // COREX_SYMBOL_H

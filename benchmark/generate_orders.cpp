@@ -1,6 +1,6 @@
 #include "generate_orders.h"
 
-using namespace RapidTrader;
+using namespace Corex;
 
 void generateOrders(std::vector<Order> &orders, uint32_t num_orders, uint32_t num_symbols)
 {

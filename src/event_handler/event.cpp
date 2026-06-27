@@ -2,7 +2,7 @@
 #include "event_handler/event.h"
 
 // LCOV_EXCL_START
-namespace RapidTrader {
+namespace Corex {
 std::ostream &operator<<(std::ostream &os, const SymbolAdded &notification)
 {
     os << "ADDED SYMBOL\n"
@@ -42,5 +42,5 @@ std::ostream &operator<<(std::ostream &os, const OrderUpdated &notification)
     os << "UPDATED ORDER\n" << notification.order;
     return os;
 }
-} // namespace RapidTrader
+} // namespace Corex
 // LCOV_EXCL_STOP

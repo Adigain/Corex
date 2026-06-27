@@ -1,10 +1,10 @@
-#ifndef RAPID_TRADER_QUEUE_H
-#define RAPID_TRADER_QUEUE_H
+#ifndef COREX_QUEUE_H
+#define COREX_QUEUE_H
 #include <queue>
 #include <mutex>
 #include <condition_variable>
 
-namespace RapidTrader::Concurrent {
+namespace Corex::Concurrent {
 /**
  * A thread-safe queue.
  *
@@ -69,5 +69,5 @@ private:
     std::queue<T> queue;
     std::condition_variable c;
 };
-} // namespace RapidTrader::Concurrent
-#endif // RAPID_TRADER_QUEUE_H
+} // namespace Corex::Concurrent
+#endif // COREX_QUEUE_H

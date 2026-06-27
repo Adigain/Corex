@@ -1,7 +1,7 @@
 #include "market/concurrent_market.h"
 #include "map_orderbook.h"
 
-namespace RapidTrader {
+namespace Corex {
 ConcurrentMarket::ConcurrentMarket(std::vector<std::unique_ptr<EventHandler>> &event_handlers, uint8_t num_threads)
     : thread_pool(num_threads)
     , symbol_submission_index(0)
@@ -116,4 +116,4 @@ std::ostream &operator<<(std::ostream &os, const ConcurrentMarket &concurrent_ma
     os << concurrent_market.toString();
     return os;
 }
-} // namespace RapidTrader
+} // namespace Corex

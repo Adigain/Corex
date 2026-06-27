@@ -1,7 +1,7 @@
 #include "market/market.h"
 #include "map_orderbook.h"
 
-namespace RapidTrader {
+namespace Corex {
 OrderBookHandler::OrderBookHandler(std::unique_ptr<EventHandler> event_handler_)
     : event_handler(std::move(event_handler_))
 {}
@@ -158,4 +158,4 @@ void Market::dumpMarket(const std::string &name) const
     file.close();
 }
 // LCOV_EXCL_END
-} // namespace RapidTrader
+} // namespace Corex

@@ -1,5 +1,5 @@
-#ifndef RAPID_TRADER_MAP_ORDERBOOK_H
-#define RAPID_TRADER_MAP_ORDERBOOK_H
+#ifndef COREX_MAP_ORDERBOOK_H
+#define COREX_MAP_ORDERBOOK_H
 #include <map>
 #include <limits>
 #include "robin_hood.h"
@@ -8,7 +8,7 @@
 #include "order.h"
 #include "event_handler/event_handler.h"
 
-namespace RapidTrader {
+namespace Corex {
 // Only validate orderbook in debug mode.
 #ifndef NDEBUG
 #    define VALIDATE_ORDERBOOK validateOrderBook()
@@ -431,5 +431,5 @@ private:
     // The symbol ID associated with the book.
     uint32_t symbol_id;
 };
-} // namespace RapidTrader
-#endif // RAPID_TRADER_MAP_ORDERBOOK_H
+} // namespace Corex
+#endif // COREX_MAP_ORDERBOOK_H

@@ -4,7 +4,7 @@
 #include "event_handler/event.h"
 #include "log.h"
 
-namespace RapidTrader {
+namespace Corex {
 MapOrderBook::MapOrderBook(uint32_t symbol_id_, EventHandler &event_handler_)
     : symbol_id(symbol_id_)
     , event_handler(event_handler_)
@@ -548,5 +548,5 @@ void MapOrderBook::validateTrailingStopOrders() const
         }
     }
 }
-} // namespace RapidTrader
+} // namespace Corex
   // LCOV_EXCL_END

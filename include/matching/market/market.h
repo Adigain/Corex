@@ -1,5 +1,5 @@
-#ifndef RAPID_TRADER_MARKET_H
-#define RAPID_TRADER_MARKET_H
+#ifndef COREX_MARKET_H
+#define COREX_MARKET_H
 #include <iostream>
 #include <fstream>
 #include <memory>
@@ -10,7 +10,7 @@
 #include "symbol.h"
 #include "event_handler.h"
 
-namespace RapidTrader {
+namespace Corex {
 class EventHandler;
 
 // A struct for the shared logic between market and concurrent market.
@@ -154,5 +154,5 @@ private:
     // Symbol IDs to symbols.
     robin_hood::unordered_map<uint32_t, std::unique_ptr<Symbol>> id_to_symbol;
 };
-} // namespace RapidTrader
-#endif // RAPID_TRADER_MARKET_H
+} // namespace Corex
+#endif // COREX_MARKET_H

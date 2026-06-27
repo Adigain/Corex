@@ -1,8 +1,8 @@
-#ifndef RAPID_TRADER_LEVEL_H
-#define RAPID_TRADER_LEVEL_H
+#ifndef COREX_LEVEL_H
+#define COREX_LEVEL_H
 #include "order.h"
 
-namespace RapidTrader {
+namespace Corex {
 // Only validate level in debug mode.
 #ifndef NDEBUG
 #    define VALIDATE_LEVEL validateLevel()
@@ -181,5 +181,5 @@ private:
     uint64_t volume;
     uint64_t price;
 };
-} // namespace RapidTrader
-#endif // RAPID_TRADER_LEVEL_H
+} // namespace Corex
+#endif // COREX_LEVEL_H

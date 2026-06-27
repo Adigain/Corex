@@ -1,7 +1,7 @@
 #include <iostream>
 #include "level.h"
 
-namespace RapidTrader {
+namespace Corex {
 Level::Level(uint64_t price_, LevelSide side_, uint32_t symbol_id_)
     : price(price_)
     , side(side_)
@@ -102,5 +102,5 @@ void Level::validateLevel() const
     }
     assert(actual_volume == volume && "Level has incorrect volume!");
 }
-} // namespace RapidTrader
+} // namespace Corex
 // LCOV_EXCL_STOP

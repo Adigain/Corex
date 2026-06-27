@@ -5,7 +5,7 @@
 #include "market/concurrent_market.h"
 #include "event_handler/event_handler.h"
 
-using namespace RapidTrader;
+using namespace Corex;
 
 static void BM_ConcurrentMarket(benchmark::State &state)
 {

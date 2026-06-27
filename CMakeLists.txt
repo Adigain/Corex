@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.6)
-project(rapid_trader LANGUAGES CXX)
+project(corex LANGUAGES CXX)
 
 include(FetchContent)
 find_package(Git REQUIRED)
@@ -13,8 +13,8 @@ set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_INSTALL_PREFIX ${PROJECT_SOURCE_DIR})
-set(TRADER_INSTALL_LIB_DIR ${PROJECT_SOURCE_DIR}/lib)
-set(TRADER_INSTALL_BIN_DIR ${CMAKE_INSTALL_BINDIR})
+set(COREX_INSTALL_LIB_DIR ${PROJECT_SOURCE_DIR}/lib)
+set(COREX_INSTALL_BIN_DIR ${CMAKE_INSTALL_BINDIR})
 
 # ------------------------------------------------------------------------------
 # Includes
@@ -132,43 +132,43 @@ set(MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --trace-children
 set(MEMORYCHECK_COMMAND_OPTIONS "${MEMORYCHECK_COMMAND_OPTIONS} --error-exitcode=1")
 
 # ------------------------------------------------------------------------------
-# RapidTrader Library
+# Corex Library
 # ------------------------------------------------------------------------------
 file(GLOB_RECURSE LIB_HEADER_FILES "include/*.h")
 file(GLOB_RECURSE LIB_SOURCE_FILES "src/*.cpp")
-add_library(trader_lib ${LIB_HEADER_FILES} ${LIB_SOURCE_FILES})
-target_link_libraries(trader_lib spdlog)
-install(TARGETS trader_lib DESTINATION ${TRADER_INSTALL_LIB_DIR})
+add_library(corex_lib ${LIB_HEADER_FILES} ${LIB_SOURCE_FILES})
+target_link_libraries(corex_lib spdlog)
+install(TARGETS corex_lib DESTINATION ${COREX_INSTALL_LIB_DIR})
 
 # ------------------------------------------------------------------------------
-# Rapid Trader Example
+# Corex Example
 # ------------------------------------------------------------------------------
-add_executable(trader_market_example examples/market_example.cpp)
-add_executable(trader_concurrent_market_example examples/concurrent_market_example.cpp examples/simple_event_handler.h)
-target_link_libraries(trader_market_example trader_lib)
-target_link_libraries(trader_concurrent_market_example trader_lib)
-install(TARGETS trader_market_example DESTINATION ${TRADER_INSTALL_BIN_DIR}/examples)
-install(TARGETS trader_concurrent_market_example DESTINATION ${TRADER_INSTALL_BIN_DIR}/examples)
+add_executable(corex_market_example examples/market_example.cpp)
+add_executable(corex_concurrent_market_example examples/concurrent_market_example.cpp examples/simple_event_handler.h)
+target_link_libraries(corex_market_example corex_lib)
+target_link_libraries(corex_concurrent_market_example corex_lib)
+install(TARGETS corex_market_example DESTINATION ${COREX_INSTALL_BIN_DIR}/examples)
+install(TARGETS corex_concurrent_market_example DESTINATION ${COREX_INSTALL_BIN_DIR}/examples)
 
 # ------------------------------------------------------------------------------
-# Rapid Trader Benchmark
+# Corex Benchmark
 # ------------------------------------------------------------------------------
-add_executable(trader_benchmark benchmark/bench_market.cpp benchmark/generate_orders.h benchmark/generate_orders.cpp)
-add_executable(concurrent_trader_benchmark benchmark/bench_concurrent_market.cpp benchmark/generate_orders.h
+add_executable(corex_benchmark benchmark/bench_market.cpp benchmark/generate_orders.h benchmark/generate_orders.cpp)
+add_executable(concurrent_corex_benchmark benchmark/bench_concurrent_market.cpp benchmark/generate_orders.h
         benchmark/generate_orders.cpp)
-target_link_libraries(trader_benchmark benchmark::benchmark trader_lib)
-target_link_libraries(concurrent_trader_benchmark benchmark::benchmark trader_lib)
-install(TARGETS trader_benchmark concurrent_trader_benchmark DESTINATION ${TRADER_INSTALL_BIN_DIR}/benchmarks)
+target_link_libraries(corex_benchmark benchmark::benchmark corex_lib)
+target_link_libraries(concurrent_corex_benchmark benchmark::benchmark corex_lib)
+install(TARGETS corex_benchmark concurrent_corex_benchmark DESTINATION ${COREX_INSTALL_BIN_DIR}/benchmarks)
 
 # ------------------------------------------------------------------------------
-# Rapid Trader Tests
+# Corex Tests
 # ------------------------------------------------------------------------------
 include(CTest)
 include(GoogleTest)
 file(GLOB_RECURSE TEST_SOURCE_FILES "test/*.cpp")
-add_executable(trader_tests ${TEST_SOURCE_FILES})
-target_link_libraries(trader_tests trader_lib)
-target_link_libraries(trader_tests gtest_main)
-gtest_discover_tests(trader_tests)
-install(TARGETS trader_tests DESTINATION ${TRADER_INSTALL_BIN_DIR}/tests)
+add_executable(corex_tests ${TEST_SOURCE_FILES})
+target_link_libraries(corex_tests corex_lib)
+target_link_libraries(corex_tests gtest_main)
+gtest_discover_tests(corex_tests)
+install(TARGETS corex_tests DESTINATION ${COREX_INSTALL_BIN_DIR}/tests)
 

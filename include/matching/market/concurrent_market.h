@@ -1,5 +1,5 @@
-#ifndef RAPID_TRADER_CONCURRENT_MARKET_H
-#define RAPID_TRADER_CONCURRENT_MARKET_H
+#ifndef COREX_CONCURRENT_MARKET_H
+#define COREX_CONCURRENT_MARKET_H
 #include <iostream>
 #include <fstream>
 #include <memory>
@@ -9,7 +9,7 @@
 #include "orderbook.h"
 #include "symbol.h"
 
-namespace RapidTrader {
+namespace Corex {
 using namespace Concurrent;
 class EventHandler;
 class OrderBookHandler;
@@ -146,5 +146,5 @@ private:
     // with a newly added symbol.
     uint32_t symbol_submission_index;
 };
-} // namespace RapidTrader
-#endif // RAPID_TRADER_CONCURRENT_MARKET_H
+} // namespace Corex
+#endif // COREX_CONCURRENT_MARKET_H

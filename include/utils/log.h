@@ -1,5 +1,5 @@
-#ifndef RAPID_TRADER_LOG_H
-#define RAPID_TRADER_LOG_H
+#ifndef COREX_LOG_H
+#define COREX_LOG_H
 #include <spdlog/spdlog.h>
 
 class Log
@@ -37,4 +37,4 @@ private:
 #    define LOG_ERROR(...) Log::getLogger()->error(__VA_ARGS__)
 #    define LOG_CRITICAL(...) Log::getLogger()->critical(__VA_ARGS__)
 #endif
-#endif // RAPID_TRADER_LOG_H
+#endif // COREX_LOG_H

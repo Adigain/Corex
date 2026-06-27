@@ -2,7 +2,7 @@
 #include "market/market.h"
 #include "simple_event_handler.h"
 
-using namespace RapidTrader;
+using namespace Corex;
 
 int main()
 {

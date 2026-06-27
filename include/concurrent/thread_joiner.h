@@ -1,9 +1,9 @@
-#ifndef RAPID_TRADER_THREAD_JOINER_H
-#define RAPID_TRADER_THREAD_JOINER_H
+#ifndef COREX_THREAD_JOINER_H
+#define COREX_THREAD_JOINER_H
 #include <vector>
 #include <thread>
 
-namespace RapidTrader::Concurrent {
+namespace Corex::Concurrent {
 /**
  * A class to clean up threads used by the thread pool.
  */
@@ -27,5 +27,5 @@ private:
     // The threads that the joiner is responsible for joining.
     std::vector<std::thread> &threads;
 };
-} // namespace RapidTrader::Concurrent
-#endif // RAPID_TRADER_THREAD_JOINER_H
+} // namespace Corex::Concurrent
+#endif // COREX_THREAD_JOINER_H

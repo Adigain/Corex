@@ -1,8 +1,8 @@
-#ifndef RAPID_TRADER_ORDER_H
-#define RAPID_TRADER_ORDER_H
+#ifndef COREX_ORDER_H
+#define COREX_ORDER_H
 #include <boost/intrusive/list.hpp>
 
-namespace RapidTrader {
+namespace Corex {
 // Only validate order in debug mode.
 #ifndef NDEBUG
 #    define VALIDATE_ORDER validateOrder()
@@ -621,5 +621,5 @@ private:
     uint64_t open_quantity;
     uint64_t last_executed_quantity;
 };
-} // namespace RapidTrader
-#endif // RAPID_TRADER_ORDER_H
+} // namespace Corex
+#endif // COREX_ORDER_H

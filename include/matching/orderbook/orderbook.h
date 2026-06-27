@@ -1,8 +1,8 @@
-#ifndef RAPID_TRADER_ORDERBOOK_H
-#define RAPID_TRADER_ORDERBOOK_H
+#ifndef COREX_ORDERBOOK_H
+#define COREX_ORDERBOOK_H
 #include "order.h"
 
-namespace RapidTrader {
+namespace Corex {
 class OrderBook
 {
 public:
@@ -115,5 +115,5 @@ public:
 
     virtual ~OrderBook() = default;
 };
-} // namespace RapidTrader
-#endif // RAPID_TRADER_ORDERBOOK_H
+} // namespace Corex
+#endif // COREX_ORDERBOOK_H

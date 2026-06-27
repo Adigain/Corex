@@ -1,8 +1,8 @@
-#ifndef RAPID_TRADER_SIMPLE_EVENT_HANDLER_H
-#define RAPID_TRADER_SIMPLE_EVENT_HANDLER_H
+#ifndef COREX_SIMPLE_EVENT_HANDLER_H
+#define COREX_SIMPLE_EVENT_HANDLER_H
 #include "event_handler.h"
 
-using namespace RapidTrader;
+using namespace Corex;
 
 class SimpleEventHandler : public EventHandler
 {
@@ -33,4 +33,4 @@ protected:
         std::cout << notification << std::endl;
     }
 };
-#endif // RAPID_TRADER_SIMPLE_EVENT_HANDLER_H
+#endif // COREX_SIMPLE_EVENT_HANDLER_H

@@ -1,5 +1,5 @@
-#ifndef RAPID_TRADER_THREAD_POOL_H
-#define RAPID_TRADER_THREAD_POOL_H
+#ifndef COREX_THREAD_POOL_H
+#define COREX_THREAD_POOL_H
 #include <thread>
 #include <vector>
 #include <atomic>
@@ -8,7 +8,7 @@
 #include "concurrent/thread_joiner.h"
 #include "concurrent/queue.h"
 
-namespace RapidTrader::Concurrent {
+namespace Corex::Concurrent {
 class ThreadPool
 {
 public:
@@ -192,5 +192,5 @@ private:
     // Handles cleaning up the worker threads when the thread pool is destroyed.
     ThreadJoiner thread_joiner;
 };
-} // namespace RapidTrader::Concurrent
-#endif // RAPID_TRADER_THREAD_POOL_H
+} // namespace Corex::Concurrent
+#endif // COREX_THREAD_POOL_H

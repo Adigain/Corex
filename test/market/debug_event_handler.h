@@ -1,9 +1,9 @@
-#ifndef RAPID_TRADER_DEBUG_EVENT_HANDLER_H
-#define RAPID_TRADER_DEBUG_EVENT_HANDLER_H
+#ifndef COREX_DEBUG_EVENT_HANDLER_H
+#define COREX_DEBUG_EVENT_HANDLER_H
 #include "event_handler/event_handler.h"
 #include "event.h"
 
-using namespace RapidTrader;
+using namespace Corex;
 
 struct MarketEventDebugger
 {
@@ -59,4 +59,4 @@ protected:
 private:
     MarketEventDebugger &market_debugger;
 };
-#endif // RAPID_TRADER_DEBUG_EVENT_HANDLER_H
+#endif // COREX_DEBUG_EVENT_HANDLER_H

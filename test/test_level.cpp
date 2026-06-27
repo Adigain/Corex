@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "level.h"
 
-using namespace RapidTrader;
+using namespace Corex;
 
 TEST(Level, AddingOrdersToLevelShouldWork1)
 {
